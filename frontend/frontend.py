@@ -1,8 +1,9 @@
 from flask import Flask, redirect, request, flash, render_template
-import requests
+import requests # To make api requests to backend
 
+# Set workspace values / app config
 DEBUG = True # debug flag to print error information
-SECRET_KEY = "a41014794565ebf9f22b99e2" # Used for cookies / session variables
+SECRET_KEY = "a41014794565ebf9f22b99e2" # Used for Flask flash
 
 app = Flask(__name__)
 app.config.from_object(__name__) # loads workspace values
@@ -17,34 +18,36 @@ def initial():
 def login():
     payload = {"method": request.method}
     if request.method == 'POST':
-        payload["data"] = request.form
+        payload["data"] = request.form # Appends username and password to payload
     try:
+        # Try to call backend (GET and POST work the same, backend handles this)
         try:
             r = requests.post('http://host.docker.internal:5000/login', json=payload)
-            if r.text == 'PROFILE':
+            if r.text == 'PROFILE': # Successfully created user or logged in to existing
                 return redirect('/profile')
-            elif r.text == 'TAKEN':
+            elif r.text == 'TAKEN': # Username exists and password is incorrect
                 flash("That username is already taken") # Flask method to show messages to user (errors, other feedback)
                 return render_template('login.html')
             else:
                 raise RuntimeError
         except:
-            return render_template('login.html')
+            return render_template('login.html') # Request failed, backend not online
     except:
         return 'FAIL'
 
+# Main page for users, can either show your own profile or another user's profile (if POST)
 @app.route('/profile', methods=['GET', 'POST'])
 def homepage():
     payload = {"method": request.method}
-    if request.method == 'POST':
+    if request.method == 'POST': # POST method, returns searched user's profile
         payload["data"] = request.form
         try:
             user = requests.post('http://host.docker.internal:5000/profile', json=payload).json()
             current = user["current"]
         except:
-            flash("User does not exist")
+            flash("User does not exist") # User not in DB
             return redirect("/profile")
-    else:
+    else: # GET Method, returns own user's profile
         try:
             user = requests.get('http://host.docker.internal:5000/currentUser').json()
             if user == 'FAILURE':
@@ -72,23 +75,23 @@ def homepage():
         current = current
     )
 
-# Create / Edit Profile information
+# Edits Profile information
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
     payload = {"method": request.method}
-    if request.method == 'POST':
+    if request.method == 'POST': # Edits the information before getting the current user
         payload["data"] = request.form
         try:
             requests.post('http://host.docker.internal:5000/edit', json=payload)
             return redirect('/profile')
         except:
-            return "FAIL"
+            return "FAIL" # Backend not online
     try:
         user = requests.get('http://host.docker.internal:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
-        return redirect('/login')
+        return redirect('/login') # User not logged in
 
     return render_template('editProfile.html',
         profilepic = user["profilepic"],
@@ -105,11 +108,12 @@ def edit():
         phone_number = user["phone_number"],
         my_journal = user["my_journal"]
     )
-# To Just change the background of the profile
+
+# To Just change the background of the profile, functions the same as edit
 @app.route('/editbg', methods=['GET', 'POST'])
 def editbg():
     payload = {"method": request.method}
-    if request.method == 'POST':
+    if request.method == 'POST': # Edits background before retrieving user
         payload["data"] = request.form
         try:
             requests.post('http://host.docker.internal:5000/editbg', json=payload)
@@ -121,12 +125,13 @@ def editbg():
         if user == 'FAILURE':
             raise RuntimeError
     except:
-        return redirect('/login')
+        return redirect('/login') # User not logged in
 
     return render_template('editBackground.html',
         bg = user["bg"]
     )
 
+# Deletes current user from DB
 @app.route('/delete')
 def delete():
     try:
@@ -134,9 +139,9 @@ def delete():
         if user == 'FAILURE':
             raise RuntimeError
     except:
-        return redirect('/login')
+        return redirect('/login') # User not logged in
     
-    # If user does not exist in table, go back to profile
+    # Tries to delete, if fails then the Backend is not online
     try:
         requests.get('http://host.docker.internal:5000/delete')
     except:
