@@ -44,9 +44,7 @@ def homepage():
         payload["data"] = request.form
         try:
             user = requests.post('http://localhost:5000/profile', json=payload).json()
-            print(user)
             current = user["current"]
-            print(current)
         except:
             flash("User does not exist")
             return redirect("/profile")
@@ -85,7 +83,6 @@ def edit():
     if request.method == 'POST':
         payload["data"] = request.form
         try:
-            print(payload)
             requests.post('http://localhost:5000/edit', json=payload)
             return redirect('/profile')
         except:
@@ -119,7 +116,6 @@ def editbg():
     if request.method == 'POST':
         payload["data"] = request.form
         try:
-            print(payload)
             requests.post('http://localhost:5000/editbg', json=payload)
             return redirect('/profile')
         except:
