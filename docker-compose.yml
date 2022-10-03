@@ -3,7 +3,6 @@ services:
 # Database
   mongo:
     image: mongo
-    # restart: always
     ports:
       - 27017:27017
     volumes: 
@@ -11,31 +10,31 @@ services:
     environment: 
       MONGODB_INITDB_ROOT_USERNAME: username
       MONGODB_INITDB_ROOT_PASSWORD: password
-#     networks:
-#       - backend
+    networks:
+      - backend
 
-# # Backend
-#   backend:
-#     image: node_backend
-#     ports:
-#       - 3001:3001
-#     networks: 
-#       - backend
-#       - frontend
+# Backend
+  backend:
+    build: ./backend
+    ports:
+      - 5000:5000
+    networks: 
+      - backend
+      - frontend
 
-# # Frontend
-#   frontend:
-#     image: node_frontend
-#     ports:
-#       - 3000:3000
-#     networks: 
-#       - frontend
+# Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - 8080:8080
+    networks: 
+      - frontend
       
-# networks: 
-#   backend:
-#     driver: bridge
-#   frontend:
-#     driver: bridge
+networks: 
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
 
 volumes:
   db_data:

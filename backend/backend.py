@@ -1,4 +1,4 @@
-from flask import Flask, redirect, g, request, flash, render_template
+from flask import Flask, request
 import pymongo
 from hashlib import md5 # Encoder for password
 # import os # random string method
@@ -10,11 +10,11 @@ DEBUG = True # debug flag to print error information
 app = Flask(__name__)
 app.config.from_object(__name__) # loads workspace values
 
-client = pymongo.MongoClient("mongodb://localhost:27017/")
+client = pymongo.MongoClient("mongodb://host.docker.internal:27017/")
 db = client["flask_db"]
 users = db["users"]
 
-global session 
+global session
 session = {'logged_in':False, 'username':''}
 
 # Set session variable, used to record which user is currently signed in
@@ -34,11 +34,6 @@ def reset_session():
     session['logged_in'] = False
     session['username'] = ''
 
-@app.route('/reset_session/')
-def reset():
-    reset_session()
-    return 'SUCCESS'
-
 # Redirects to '/login' path
 @app.route('/login', methods=["POST"])
 def login():
@@ -53,6 +48,9 @@ def login():
                 return 'PROFILE'
             except:
                 try:
+                    user = users.find_one({'username': payload["data"]['inputUsername']})
+                    if user:
+                        raise RuntimeError
                     user_dict = {
                         "username": payload["data"]['inputUsername'],
                         "password": md5((payload["data"]['inputPassword']).encode('utf-8')).hexdigest(),
@@ -158,4 +156,4 @@ def delete():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000, host="0.0.0.0")

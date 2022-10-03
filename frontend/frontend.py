@@ -1,4 +1,4 @@
-from flask import Flask, redirect, g, request, flash, render_template
+from flask import Flask, redirect, request, flash, render_template
 import requests
 
 DEBUG = True # debug flag to print error information
@@ -10,10 +10,6 @@ app.config.from_object(__name__) # loads workspace values
 # Redirects to '/login' path
 @app.route('/')
 def initial():
-    try:
-        requests.get('http://localhost:5000/')
-    except:
-        pass
     return redirect('/login')
 
 # Start page for new connection, sign in with username and password (if user does not exists it gets created) and goes to '/profile' path through html form.
@@ -24,7 +20,7 @@ def login():
         payload["data"] = request.form
     try:
         try:
-            r = requests.post('http://localhost:5000/login', json=payload)
+            r = requests.post('http://host.docker.internal:5000/login', json=payload)
             if r.text == 'PROFILE':
                 return redirect('/profile')
             elif r.text == 'TAKEN':
@@ -43,14 +39,14 @@ def homepage():
     if request.method == 'POST':
         payload["data"] = request.form
         try:
-            user = requests.post('http://localhost:5000/profile', json=payload).json()
+            user = requests.post('http://host.docker.internal:5000/profile', json=payload).json()
             current = user["current"]
         except:
             flash("User does not exist")
             return redirect("/profile")
     else:
         try:
-            user = requests.get('http://localhost:5000/currentUser').json()
+            user = requests.get('http://host.docker.internal:5000/currentUser').json()
             if user == 'FAILURE':
                 raise RuntimeError
         except:
@@ -83,12 +79,12 @@ def edit():
     if request.method == 'POST':
         payload["data"] = request.form
         try:
-            requests.post('http://localhost:5000/edit', json=payload)
+            requests.post('http://host.docker.internal:5000/edit', json=payload)
             return redirect('/profile')
         except:
             return "FAIL"
     try:
-        user = requests.get('http://localhost:5000/currentUser').json()
+        user = requests.get('http://host.docker.internal:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
@@ -116,12 +112,12 @@ def editbg():
     if request.method == 'POST':
         payload["data"] = request.form
         try:
-            requests.post('http://localhost:5000/editbg', json=payload)
+            requests.post('http://host.docker.internal:5000/editbg', json=payload)
             return redirect('/profile')
         except:
             return "FAIL"
     try:
-        user = requests.get('http://localhost:5000/currentUser').json()
+        user = requests.get('http://host.docker.internal:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
@@ -134,7 +130,7 @@ def editbg():
 @app.route('/delete')
 def delete():
     try:
-        user = requests.get('http://localhost:5000/currentUser').json()
+        user = requests.get('http://host.docker.internal:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
@@ -142,7 +138,7 @@ def delete():
     
     # If user does not exist in table, go back to profile
     try:
-        requests.get('http://localhost:5000/delete')
+        requests.get('http://host.docker.internal:5000/delete')
     except:
         flash('Could not remove user')
         return redirect('/profile')
@@ -153,4 +149,4 @@ def delete():
 
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(port=8080, host="0.0.0.0")
