@@ -59,7 +59,7 @@ def homepage():
     return render_template('profile.html',
         username = user["username"],
         profilepic = user["profilepic"],
-        mood = user["mood"],
+        pronouns = user["pronouns"],
         description = user["description"],
         email = user["email"],
         firstName = user["firstName"],
@@ -67,10 +67,11 @@ def homepage():
         country = user["country"],
         birthday = user["birthday"],
         occupation = user["occupation"],
-        relationship_status = user["relationship_status"],
         mobile_number = user["mobile_number"],
         phone_number = user["phone_number"],
         my_journal = user["my_journal"],
+        my_experience = user["my_experience"],
+        my_education = user["my_education"],
         bg = user["bg"],
         current = current
     )
@@ -95,7 +96,7 @@ def edit():
 
     return render_template('editProfile.html',
         profilepic = user["profilepic"],
-        mood = user["mood"],
+        pronouns = user["pronouns"],
         description = user["description"],
         email = user["email"],
         firstName = user["firstName"],
@@ -103,10 +104,11 @@ def edit():
         country = user["country"],
         birthday = user["birthday"],
         occupation = user["occupation"],
-        relationship_status = user["relationship_status"],
         mobile_number = user["mobile_number"],
         phone_number = user["phone_number"],
-        my_journal = user["my_journal"]
+        my_journal = user["my_journal"],
+        my_experience = user["my_experience"],
+        my_education = user["my_education"]
     )
 
 # To Just change the background of the profile, functions the same as edit
