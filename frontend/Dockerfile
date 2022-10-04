@@ -8,4 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-CMD [ "python3", "frontend.py", "--host=0.0.0.0"]
+CMD ["frontend.py", "--host=0.0.0.0"]
+
+ENTRYPOINT [ "python3" ]

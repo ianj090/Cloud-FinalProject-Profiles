@@ -8,4 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-CMD [ "python3", "backend.py", "--host=0.0.0.0"]
+CMD ["backend.py", "--host=0.0.0.0"]
+
+ENTRYPOINT [ "python3" ]

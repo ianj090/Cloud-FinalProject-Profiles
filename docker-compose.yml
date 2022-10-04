@@ -29,7 +29,7 @@ services:
       - 8080:8080
     networks: 
       - frontend
-      
+# Isolation of communication between components of web app  
 networks: 
   backend:
     driver: bridge
