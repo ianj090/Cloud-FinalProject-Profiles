@@ -1,17 +1,17 @@
 version: "3.8"
 services:
-# Database
-  mongo:
-    image: mongo
-    ports:
-      - 27017:27017
-    volumes: 
-      - db_data:/data/db
-    environment: 
-      MONGODB_INITDB_ROOT_USERNAME: username
-      MONGODB_INITDB_ROOT_PASSWORD: password
-    networks:
-      - backend
+# # Database
+#   mongo:
+#     image: mongo
+#     ports:
+#       - 27017:27017
+#     volumes: 
+#       - db_data:/data/db
+#     environment: 
+#       MONGODB_INITDB_ROOT_USERNAME: username
+#       MONGODB_INITDB_ROOT_PASSWORD: password
+#     networks:
+#       - backend
 
 # Backend
   backend:
@@ -36,5 +36,5 @@ networks:
   frontend:
     driver: bridge
 
-volumes:
-  db_data:
+# volumes:
+#   db_data:
