@@ -9,9 +9,9 @@ app = Flask(__name__)
 app.config.from_object(__name__) # loads workspace values
 
 # Connects to MongoDB, creates database 'flask_db' and collection 'users'
-client = pymongo.MongoClient("mongodb://username:password@cloud-profiles.cluster-cgeqr5welkvw.us-east-1.docdb.amazonaws.com:27017/?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false")
-db = client["flask_db"]
-users = db["users"]
+client = pymongo.MongoClient("mongodb://username:password@cloud-profiles.cluster-cgeqr5welkvw.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false")
+db = client.flask_db
+users = db.users
 
 # Global variable to keep logged in user information
 global session
@@ -58,7 +58,7 @@ def login():
                         "username": payload["data"]['inputUsername'],
                         "password": md5((payload["data"]['inputPassword']).encode('utf-8')).hexdigest(),
                         "profilepic": "https://d3ipks40p8ekbx.cloudfront.net/dam/jcr:3a4e5787-d665-4331-bfa2-76dd0c006c1b/user_icon.png",
-                        "mood": "Relaxed",
+                        "pronouns": "They/Them",
                         "description": "",
                         "email": "",
                         "firstName": "",
@@ -66,10 +66,11 @@ def login():
                         "country": "",
                         "birthday": "",
                         "occupation": "",
-                        "relationship_status": "",
                         "mobile_number": "",
                         "phone_number": "",
                         "my_journal": "",
+                        "my_experience": "",
+                        "my_education": "",
                         "bg": "#f1f2f7"
                     }
                     users.insert_one(user_dict)
@@ -115,7 +116,7 @@ def edit():
     if (payload["data"]['editProfilePic'] != ""):
         users.update_one({'username': current_user["username"]}, {"$set": {
             "profilepic": payload["data"]['editProfilePic'],
-            "mood": payload["data"]['editMood'],
+            "pronouns": payload["data"]['editpronouns'],
             "email": payload["data"]['editEmail'],
             "description": payload["data"]['editDescription'],
             "firstName": payload["data"]['editFirstName'],
@@ -123,14 +124,15 @@ def edit():
             "country": payload["data"]['editCountry'],
             "birthday": payload["data"]['editBirthday'],
             "occupation": payload["data"]['editOccupation'],
-            "relationship_status": payload["data"]['editRelationship_status'],
             "mobile_number": payload["data"]['editMobileNumber'],
             "phone_number": payload["data"]['editPhoneNumber'],
-            "my_journal": payload["data"]['editJournal']
+            "my_journal": payload["data"]['editJournal'],
+            "my_experience": payload["data"]['editExperience'],
+            "my_education": payload["data"]['editEducation']
         }})
     else:
         users.update_one({'username': current_user["username"]}, {"$set": {
-            "mood": payload["data"]['editMood'],
+            "pronouns": payload["data"]['editpronouns'],
             "email": payload["data"]['editEmail'],
             "description": payload["data"]['editDescription'],
             "firstName": payload["data"]['editFirstName'],
@@ -138,10 +140,11 @@ def edit():
             "country": payload["data"]['editCountry'],
             "birthday": payload["data"]['editBirthday'],
             "occupation": payload["data"]['editOccupation'],
-            "relationship_status": payload["data"]['editRelationship_status'],
             "mobile_number": payload["data"]['editMobileNumber'],
             "phone_number": payload["data"]['editPhoneNumber'],
-            "my_journal": payload["data"]['editJournal']
+            "my_journal": payload["data"]['editJournal'],
+            "my_experience": payload["data"]['editExperience'],
+            "my_education": payload["data"]['editEducation']
         }})
     return "SUCCESS"
 

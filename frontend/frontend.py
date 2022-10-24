@@ -22,7 +22,7 @@ def login():
     try:
         # Try to call backend (GET and POST work the same, backend handles this)
         try:
-            r = requests.post('http://host.docker.internal:5000/login', json=payload)
+            r = requests.post('http://44.203.160.208:5000/login', json=payload)
             if r.text == 'PROFILE': # Successfully created user or logged in to existing
                 return redirect('/profile')
             elif r.text == 'TAKEN': # Username exists and password is incorrect
@@ -42,14 +42,14 @@ def homepage():
     if request.method == 'POST': # POST method, returns searched user's profile
         payload["data"] = request.form
         try:
-            user = requests.post('http://host.docker.internal:5000/profile', json=payload).json()
+            user = requests.post('http://44.203.160.208:5000/profile', json=payload).json()
             current = user["current"]
         except:
             flash("User does not exist") # User not in DB
             return redirect("/profile")
     else: # GET Method, returns own user's profile
         try:
-            user = requests.get('http://host.docker.internal:5000/currentUser').json()
+            user = requests.get('http://44.203.160.208:5000/currentUser').json()
             if user == 'FAILURE':
                 raise RuntimeError
         except:
@@ -83,12 +83,12 @@ def edit():
     if request.method == 'POST': # Edits the information before getting the current user
         payload["data"] = request.form
         try:
-            requests.post('http://host.docker.internal:5000/edit', json=payload)
+            requests.post('http://44.203.160.208:5000/edit', json=payload)
             return redirect('/profile')
         except:
             return "FAIL" # Backend not online
     try:
-        user = requests.get('http://host.docker.internal:5000/currentUser').json()
+        user = requests.get('http://44.203.160.208:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
@@ -118,12 +118,12 @@ def editbg():
     if request.method == 'POST': # Edits background before retrieving user
         payload["data"] = request.form
         try:
-            requests.post('http://host.docker.internal:5000/editbg', json=payload)
+            requests.post('http://44.203.160.208:5000/editbg', json=payload)
             return redirect('/profile')
         except:
             return "FAIL"
     try:
-        user = requests.get('http://host.docker.internal:5000/currentUser').json()
+        user = requests.get('http://44.203.160.208:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
@@ -137,7 +137,7 @@ def editbg():
 @app.route('/delete')
 def delete():
     try:
-        user = requests.get('http://host.docker.internal:5000/currentUser').json()
+        user = requests.get('http://44.203.160.208:5000/currentUser').json()
         if user == 'FAILURE':
             raise RuntimeError
     except:
@@ -145,7 +145,7 @@ def delete():
     
     # Tries to delete, if fails then the Backend is not online
     try:
-        requests.get('http://host.docker.internal:5000/delete')
+        requests.get('http://44.203.160.208:5000/delete')
     except:
         flash('Could not remove user')
         return redirect('/profile')
