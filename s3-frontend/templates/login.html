@@ -19,7 +19,12 @@
   </head>
 
   <body class="text-center">
-    <form class="form-signin" action="/login" method="POST">
+
+    <script>
+      payload = {"method": "GET"}
+    </script>
+
+    <form class="form-signin" id="signin" action="http://127.0.0.1:5000/login" method="POST">
       <!-- <img class="mb-4" src="{{ url_for('static', filename='bootstrap-solid.svg') }}" alt="" width="72" height="72"> -->
       {% for mesg in get_flashed_messages() %}
         <h3 style="color:#db0707">{{ mesg }}</h3><br>
@@ -35,6 +40,28 @@
         </label>
       </div> -->
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+      <script>
+        document.forms['signin'].addEventListener('submit', (event) => {
+          event.preventDefault();
+          // TODO do something here to show user that form is being submitted
+          payload = {"method": request.method, "data": event.target}
+          fetch(event.target.action, {
+              method: 'POST',
+              body: new URLSearchParams(new FormData(payload)) // event.target is the form
+          }).then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              return response.json(); // or response.text() or whatever the server sends
+          }).then((body) => {
+              // TODO handle body
+          }).catch((error) => {
+              // TODO handle error
+          });
+      });
+      </script>
+
       <p class="mt-5 mb-3 text-muted">© 2021-2021</p>
     </form>
   
