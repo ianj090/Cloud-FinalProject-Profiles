@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 import pymongo # Mongo DB client
 from hashlib import md5 # Encoder for password
 
