@@ -7,6 +7,7 @@ from hashlib import md5 # Encoder for password
 DEBUG = True # debug flag to print error information
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(__name__) # loads workspace values
 
 # Connects to MongoDB, creates database 'flask_db' and collection 'users'
