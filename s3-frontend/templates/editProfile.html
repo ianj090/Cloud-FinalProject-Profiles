@@ -779,6 +779,86 @@
 
   <link href="main.css" rel="stylesheet" media="all">
   <meta name="robots" content="noindex, follow">
+
+
+  <script>
+    let payload = {"method": "GET"};
+
+    fetch("http://44.204.160.118:5000/currentUser", {
+        method: "GET",
+        referrerPolicy: "unsafe-url",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+    }}).then(res => {
+    return res.json().then((data) => {
+        console.log(data)
+
+        if (data == "FAILURE") {
+          window.location.replace('http://cloud-profiles-frontend.s3.amazonaws.com/login.html')
+        } else {
+          jQuery.noConflict();
+          jQuery(document).ready(function(){
+            console.log("working")
+            jQuery("#editProfilePic").attr("value", data.profilepic);
+            jQuery("#editOccupation").attr("value", data.occupation);
+            jQuery("#editEmail").attr("value", data.email);
+            jQuery("#editpronouns").attr("value", data.pronouns);
+            jQuery("#editDescription").attr("value", data.description);
+            jQuery("#editFirstName").attr("value", data.firstName);
+            jQuery("#editLastName").attr("value", data.lastName);
+            jQuery("#editCountry").attr("value", data.country);
+            jQuery("#editBirthday").attr("value", data.birthday);
+            jQuery("#editMobileNumber").attr("value", data.mobile_number);
+            jQuery("#editPhoneNumber").attr("value", data.phone_number);
+            jQuery("#editJournal").text(data.my_journal);
+            jQuery("#editExperience").text(data.my_experience);
+            jQuery("#editEducation").text(data.my_education);
+          });
+        }
+      }).then(test => {
+        document.forms['postEdit'].addEventListener('submit', (event) => {
+          event.preventDefault();
+          // TODO do something here to show user that form is being submitted
+          payload = {"method": "POST",
+            "data": { 
+              'editProfilePic': document.getElementById('editProfilePic').value,
+              'editpronouns': document.getElementById('editpronouns').value,
+              'editEmail': document.getElementById('editEmail').value,
+              'editDescription': document.getElementById('editDescription').value,
+              'editFirstName': document.getElementById('editFirstName').value,
+              'editLastName': document.getElementById('editLastName').value,
+              'editCountry': document.getElementById('editCountry').value,
+              'editBirthday': document.getElementById('editBirthday').value,
+              'editOccupation': document.getElementById('editOccupation').value,
+              'editMobileNumber': document.getElementById('editMobileNumber').value,
+              'editPhoneNumber': document.getElementById('editPhoneNumber').value,
+              'editJournal': document.getElementById('editJournal').value,
+              'editExperience': document.getElementById('editExperience').value,
+              'editEducation': document.getElementById('editEducation').value
+            }
+          }
+          console.log(payload)
+              
+          fetch("http://44.204.160.118:5000/edit", {
+            method: "POST",
+            referrerPolicy: "unsafe-url",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          }).then(res => {
+            return res.text().then((data2) => {
+              console.log(data2)
+              window.location.replace('http://cloud-profiles-frontend.s3.amazonaws.com/profile.html')
+            })
+          })
+        })
+      })
+    });
+  </script>
+
 </head>
 
 <body>
@@ -788,7 +868,7 @@
         <!-- <div class="card-heading"></div> -->
         <div class="card-body">
           <h2 class="title">Edit Profile</h2>
-          <form action="/edit" method="POST">
+          <form id="postEdit" action="http://44.204.160.118:5000/edit" method="POST">
 
             <!-- <div class="input-group">
               <p class="input--style-2" style="color: black;">Username: </p>
@@ -800,7 +880,7 @@
             </div>
             <div class="input-group">
             <p class="input--style-2" style="color: black;" >Change Pronouns:</p>
-            <select value="{{ pronouns }}" id="editpronouns" name="editpronouns">
+            <select id="editpronouns" name="editpronouns">
               <option value="They/Them">They/Them</option>
               <option value="She/Her">She/Her</option>
               <option value="He/Him">He/Him</option>
@@ -809,51 +889,51 @@
           </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Inspirational Quote or Header for basic personal info section: </p>
-              <input value="{{ description }}" class="input--style-2" type="text" placeholder="There is nothing impossible to they who will try." id="editDescription" name="editDescription">
+              <input class="input--style-2" type="text" placeholder="There is nothing impossible to they who will try." id="editDescription" name="editDescription">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">E-mail: </p>
-              <input value="{{ email }}" class="input--style-2" type="text" placeholder="E-mail" id="editEmail" name="editEmail">
+              <input class="input--style-2" type="text" placeholder="E-mail" id="editEmail" name="editEmail">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">First Name: </p>
-              <input value="{{ firstName }}" class="input--style-2" type="text" placeholder="First Name" id="editFirstName" name="editFirstName">
+              <input class="input--style-2" type="text" placeholder="First Name" id="editFirstName" name="editFirstName">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Last Name: </p>
-              <input value="{{ lastName }}" class="input--style-2" type="text" placeholder="Last Name" id="editLastName" name="editLastName">
+              <input class="input--style-2" type="text" placeholder="Last Name" id="editLastName" name="editLastName">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Occupation: </p>
-              <input value="{{ occupation }}" class="input--style-2" type="text" placeholder="Occupation" id="editOccupation" name="editOccupation">
+              <input class="input--style-2" type="text" placeholder="Occupation" id="editOccupation" name="editOccupation">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Location: </p>
-              <input value="{{ country }}" class="input--style-2" type="text" placeholder="City, Country" id="editCountry" name="editCountry">
+              <input class="input--style-2" type="text" placeholder="City, Country" id="editCountry" name="editCountry">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Birthday: </p>
-              <input value="{{ birthday }}" class="input--style-2" type="text" placeholder="Birthday" id="editBirthday" name="editBirthday">
+              <input class="input--style-2" type="text" placeholder="Birthday" id="editBirthday" name="editBirthday">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Mobile Number: </p>
-              <input value="{{ mobile_number }}" class="input--style-2" type="text" placeholder="Mobile Number" id="editMobileNumber" name="editMobileNumber">
+              <input class="input--style-2" type="text" placeholder="Mobile Number" id="editMobileNumber" name="editMobileNumber">
             </div>
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Phone Number: </p>
-              <input value="{{ phone_number }}" class="input--style-2" type="text" placeholder="Phone Number" id="editPhoneNumber" name="editPhoneNumber">
+              <input class="input--style-2" type="text" placeholder="Phone Number" id="editPhoneNumber" name="editPhoneNumber">
             </div>
             <div class="mb-3">
               <p class="input--style-2" style="color: black;">ABOUT ME:</p>
-              <textarea class="input--style-2" id="editJournal" name="editJournal" style="width: 100%; min-height: 30%;" value="{{ my_journal }}" placeholder="Who I am as a person and professional">{{ my_journal }}</textarea>
+              <textarea class="input--style-2" id="editJournal" name="editJournal" style="width: 100%; min-height: 30%;" placeholder="Who I am as a person and professional"></textarea>
             </div>
             <div class="mb-3">
               <p class="input--style-2" style="color: black;">WORK EXPERIENCE:</p>
-              <textarea class="input--style-2" id="editExperience" name="editExperience" style="width: 100%; min-height: 30%;" value="{{ my_experience }}" placeholder="for example: -> 20xx-20xx - Worked at X as local manager">{{ my_experience }}</textarea>
+              <textarea class="input--style-2" id="editExperience" name="editExperience" style="width: 100%; min-height: 30%;" placeholder="for example: -> 20xx-20xx - Worked at X as local manager"></textarea>
             </div>
             <div class="mb-3">
               <p class="input--style-2" style="color: black;">EDUCATION:</p>
-              <textarea class="input--style-2" id="editEducation" name="editEducation" style="width: 100%; min-height: 30%;" value="{{ my_education }}" placeholder="Graduated class of 20xx at X High School">{{ my_education }}</textarea>
+              <textarea class="input--style-2" id="editEducation" name="editEducation" style="width: 100%; min-height: 30%;" placeholder="Graduated class of 20xx at X High School"></textarea>
             </div>
 
 

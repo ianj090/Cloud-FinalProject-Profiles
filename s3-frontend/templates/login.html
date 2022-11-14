@@ -21,14 +21,42 @@
   <body class="text-center">
 
     <script>
-      payload = {"method": "GET"}
+      let payload = {"method": "GET"};
+
+      fetch("http://44.204.160.118:5000/login", {
+        method: "POST",
+        referrerPolicy: "unsafe-url",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).then(res => {
+        return res.text().then((data) => {
+          console.log(data)
+
+          if (data == "PROFILE") {
+            window.location.replace('http://cloud-profiles-frontend.s3.amazonaws.com/profile.html')
+          } else if (data == "TAKEN") {
+            alert("This username is taken")
+          } else if (data == "LOGIN") {
+            console.log('Enter information')
+          } else {
+            console.log('Backend not online')
+          }
+        })
+      });
     </script>
 
-    <form class="form-signin" id="signin" action="http://127.0.0.1:5000/login" method="POST">
+    <form class="form-signin" id="signin" action="http://44.204.160.118:5000/login" method="POST">
       <!-- <img class="mb-4" src="{{ url_for('static', filename='bootstrap-solid.svg') }}" alt="" width="72" height="72"> -->
-      {% for mesg in get_flashed_messages() %}
+
+
+      <!-- {% for mesg in get_flashed_messages() %}
         <h3 style="color:#db0707">{{ mesg }}</h3><br>
-      {% endfor %}
+      {% endfor %} -->
+
+
       <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
       <label for="inputUsername" class="sr-only">Username</label>
       <input type="text" id="inputUsername" name="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
@@ -45,21 +73,38 @@
         document.forms['signin'].addEventListener('submit', (event) => {
           event.preventDefault();
           // TODO do something here to show user that form is being submitted
-          payload = {"method": request.method, "data": event.target}
-          fetch(event.target.action, {
-              method: 'POST',
-              body: new URLSearchParams(new FormData(payload)) // event.target is the form
-          }).then((response) => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+          payload = {"method": "POST", 
+            "data": { 
+              'inputUsername': document.getElementById('inputUsername').value,
+              'inputPassword': document.getElementById('inputPassword').value
+            }
+          }
+          console.log(payload)
+          
+          fetch("http://44.204.160.118:5000/login", {
+            method: "POST",
+            referrerPolicy: "unsafe-url",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          }).then(res => {
+            return res.text().then((data) => {
+              console.log(data)
+
+              if (data == "PROFILE") {
+                window.location.replace('http://cloud-profiles-frontend.s3.amazonaws.com/profile.html')
+              } else if (data == "TAKEN") {
+                alert("This username is taken")
+              } else if (data == "LOGIN") {
+                console.log('Enter information')
+              } else {
+                console.log('Backend not online')
               }
-              return response.json(); // or response.text() or whatever the server sends
-          }).then((body) => {
-              // TODO handle body
-          }).catch((error) => {
-              // TODO handle error
+            })
           });
-      });
+        });
       </script>
 
       <p class="mt-5 mb-3 text-muted">© 2021-2021</p>

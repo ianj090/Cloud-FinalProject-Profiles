@@ -4,8 +4,6 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="Colorlib Templates">
   <meta name="author" content="Colorlib">
@@ -779,6 +777,62 @@
 
   <link href="main.css" rel="stylesheet" media="all">
   <meta name="robots" content="noindex, follow">
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+  <script>
+    let payload = {"method": "GET"};
+
+    fetch("http://44.204.160.118:5000/currentUser", {
+        method: "GET",
+        referrerPolicy: "unsafe-url",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+    }}).then(res => {
+    return res.json().then((data) => {
+        console.log(data)
+
+        if (data == "FAILURE") {
+          window.location.replace('http://cloud-profiles-frontend.s3.amazonaws.com/login.html')
+        } else {
+          jQuery.noConflict();
+          jQuery(document).ready(function(){
+            console.log("working")
+            jQuery("#editBgprofile").attr("value", data.bg);
+          });
+        }
+      }).then(test => {
+        document.forms['postEditBg'].addEventListener('submit', (event) => {
+          event.preventDefault();
+          // TODO do something here to show user that form is being submitted
+          payload = {"method": "POST",
+            "data": { 
+              'editBgprofile': document.getElementById('editBgprofile').value
+            }
+          }
+          console.log(payload)
+              
+          fetch("http://44.204.160.118:5000/editbg", {
+            method: "POST",
+            referrerPolicy: "unsafe-url",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          }).then(res => {
+            return res.text().then((data2) => {
+              console.log(data2)
+              window.location.replace('http://cloud-profiles-frontend.s3.amazonaws.com/profile.html')
+            })
+          })
+        })
+      })
+    });
+
+  </script>
+
+
 </head>
 
 <body>
@@ -788,11 +842,11 @@
         <!-- <div class="card-heading"></div> -->
         <div class="card-body">
           <h2 class="title">Edit Background</h2>
-          <form action="/editbg" method="POST">
+          <form id="postEditBg" action="http://44.204.160.118:5000/editbg" method="POST">
 
             <div class="input-group">
               <p class="input--style-2" style="color: black;">Image URL of New background Picture or HEX Code for flat color: </p>
-              <input value="{{ bg }}" class="input--style-2" type="text" id="editBgprofile" name="editBgprofile">
+              <input class="input--style-2" type="text" id="editBgprofile" name="editBgprofile">
             </div>
 
             <div class="p-t-30">
