@@ -36,8 +36,16 @@ def reset_session():
     session['logged_in'] = False
     session['username'] = ''
 
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
 # Handles Frontend GET or POST login
 @app.route('/login', methods=["POST"])
+@cross_origin(origin='*')
 def login():
     reset_session() # Login screen always resets session (assumes logout)
     payload = request.json
@@ -87,6 +95,7 @@ def login():
 
 # Handles Frontend POST profile
 @app.route('/profile', methods=["POST"])
+@cross_origin(origin='*')
 def homepage():
     payload = request.json
     user = users.find_one({'username': payload["data"]["searchUsername"]})
@@ -101,6 +110,7 @@ def homepage():
 
 # Handles any Frontend route where it requires checking who the current logged in user is
 @app.route('/currentUser')
+@cross_origin(origin='*')
 def currentUser():
     try:
         user = get_current_user()
@@ -111,6 +121,7 @@ def currentUser():
 
 # Handles Frotend POST edit
 @app.route('/edit', methods=['POST'])
+@cross_origin(origin='*')
 def edit():
     payload = request.json
     current_user = get_current_user()
@@ -152,6 +163,7 @@ def edit():
 
 # Handles Frotend POST editbg
 @app.route('/editbg', methods=['POST'])
+@cross_origin(origin='*')
 def editbg():
     payload = request.json
     current_user = get_current_user()
@@ -159,9 +171,10 @@ def editbg():
         "bg": payload["data"]['editBgprofile']
     }})
     return "SUCCESS"
-    
+
 # Handles Frontend delete
 @app.route('/delete')
+@cross_origin(origin='*')
 def delete():
     users.delete_one({'username': session["username"]})
     reset_session() # Resets the session just in case, still sends to Login so the user should be logged out anyway
